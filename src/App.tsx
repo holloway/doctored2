@@ -65,9 +65,10 @@ class App extends Component<Props, State> {
     return (
       <div>
         <p>
-          Loading and parsing a 130MB XML file in a background thread using
+          Loading and parsing an 80MB XML file in a background thread using
           WASM.
         </p>
+        <p>Open your dev console to see messages between threads.</p>
         <div>{loading && loading.loadedLengthBytes}</div>
         <div>{loaded && "DONE"}</div>
       </div>
