@@ -2,6 +2,7 @@
   "name": "doctored2",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://holloway.github.io/doctored2",
   "dependencies": {
     "@types/jest": "24.0.19",
     "@types/node": "12.11.1",
@@ -20,7 +21,7 @@
     "start": "yarn wasm && react-scripts start",
     "build": "yarn wasm && react-scripts build",
     "test": "react-scripts test",
-    "deploy": "gh-pages -d public",
+    "deploy": "yarn build && gh-pages -d build",
     "wasm": "cp ./node_modules/sax-wasm/lib/sax-wasm.wasm public/sax-wasm.wasm",
     "eject": "react-scripts eject"
   },
