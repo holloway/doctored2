@@ -1,0 +1,42 @@
+{
+  "name": "doctored2",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@types/jest": "24.0.19",
+    "@types/node": "12.11.1",
+    "@types/react": "16.9.9",
+    "@types/react-dom": "16.9.2",
+    "gh-pages": "^2.1.1",
+    "lodash": "^4.17.15",
+    "react": "^16.10.2",
+    "react-dom": "^16.10.2",
+    "react-scripts": "3.2.0",
+    "react-spring": "^8.0.27",
+    "sax-wasm": "^1.4.0",
+    "typescript": "3.6.4"
+  },
+  "scripts": {
+    "start": "yarn wasm && react-scripts start",
+    "build": "yarn wasm && react-scripts build",
+    "test": "react-scripts test",
+    "deploy": "gh-pages -d public",
+    "wasm": "cp ./node_modules/sax-wasm/lib/sax-wasm.wasm public/sax-wasm.wasm",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
