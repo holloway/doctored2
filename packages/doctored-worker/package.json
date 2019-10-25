@@ -1,0 +1,21 @@
+{
+  "name": "doctored-worker",
+  "version": "1.0.0",
+  "main": "src/index.tsx",
+  "author": "Matthew Holloway",
+  "license": "MIT",
+  "scripts": {
+    "build-typescript": "tsc --out build/doctored.worker.js src/index.tsx --module system",
+    "build": "webpack --config webpack.config.js",
+    "postbuild": "cp ../../node_modules/sax-wasm/lib/sax-wasm.wasm ./build/"
+  },
+  "devDependencies": {
+    "@babel/parser": "^7.6.4",
+    "@babel/types": "^7.6.3",
+    "sax-wasm": "^1.4.0",
+    "ts-loader": "^6.2.0",
+    "typescript": "^3.6.4",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9"
+  }
+}
