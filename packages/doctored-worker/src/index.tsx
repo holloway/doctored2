@@ -1,23 +1,103 @@
 /* eslint-disable no-restricted-globals */
 /* eslint-disable no-eval */
 // above rule is disabling 'self' var check.
-import { SaxEventType, SAXParser } from "sax-wasm";
+import { SaxEventType, SAXParser, Detail } from "sax-wasm";
 
-let data: string = "";
+const items: NodeTypes[] = [];
+let lastElement: NodeElementType;
 let saxParser: SAXParser;
 
+let count = 0;
+
 async function initSax(self: any, message: MessageInInitSax): Promise<void> {
-  console.log("initSax");
   const wasmUrl = new URL("./sax-wasm.wasm", message.location).toString();
-  saxParser = new SAXParser(SaxEventType.Attribute | SaxEventType.OpenTag, {
-    highWaterMark: 1024 * 1024
-  });
+  saxParser = new SAXParser(
+    SaxEventType.OpenTagStart |
+      SaxEventType.Attribute |
+      SaxEventType.Text |
+      SaxEventType.CloseTag
+  );
   const saxWasmResponse = await fetch(wasmUrl);
   const saxWasmBuffer = await saxWasmResponse.arrayBuffer();
   const ready = await saxParser.prepareWasm(new Uint8Array(saxWasmBuffer));
   if (ready) {
-    saxParser.eventHandler = (event: any, data: any) => {
-      // console.log("SAX EVENT!");
+    saxParser.eventHandler = (event: SaxEventType, data: Detail) => {
+      count++;
+
+      switch (event) {
+        case SaxEventType.OpenTagStart: {
+          if (count < 10) {
+            console.log(
+              "OPEN TAG",
+              JSON.parse(JSON.stringify(event)),
+              JSON.parse(JSON.stringify(data))
+            );
+          }
+
+          lastElement = [
+            1,
+            // @ts-ignore
+            data.name
+          ];
+          items.push(lastElement);
+          // @ts-ignore
+          if (data.selfClosing) {
+            items.push([20] as NodeCloseElementType);
+          }
+          break;
+        }
+        case SaxEventType.Attribute: {
+          if (count < 10) {
+            console.log(
+              "ATTRIBUTE",
+              JSON.parse(JSON.stringify(event)),
+              JSON.parse(JSON.stringify(data))
+            );
+          }
+          if (!lastElement) {
+            console.error(
+              "Attribute node received without lastItem. Huh?",
+              data
+            );
+            throw new Error();
+          }
+          if (lastElement[ELEMENT_ATTRIBUTE_OFFSET] === undefined) {
+            lastElement[ELEMENT_ATTRIBUTE_OFFSET] = {};
+          }
+          // @ts-ignore
+          lastElement[ELEMENT_ATTRIBUTE_OFFSET][data.name] = data.value;
+          break;
+        }
+        case SaxEventType.CloseTag: {
+          items.push([20] as NodeCloseElementType);
+          break;
+        }
+        case SaxEventType.Text: {
+          items.push([
+            3,
+            // @ts-ignore
+            data.value
+          ] as NodeTextType);
+          lastElement = undefined;
+          break;
+        }
+        default: {
+          console.log(
+            "SAX EVENT",
+            event,
+            SaxEventType.OpenTag,
+            SaxEventType.OpenTagStart,
+            SaxEventType.Attribute,
+            SaxEventType.CloseTag,
+            JSON.parse(JSON.stringify(data))
+          );
+          break;
+        }
+      }
+
+      if (count < 30) {
+        console.log("ITEMS", JSON.parse(JSON.stringify(items)));
+      }
     };
     self.postMessage({ type: "sax-ready" } as MessageOutSaxReady);
   } else {
@@ -41,7 +121,7 @@ async function load(self: any, message: MessageInLoad): Promise<void> {
       type: "loading",
       url: message.url,
       contentLengthBytes,
-      loadedLengthString: 0
+      itemLength: items.length
     } as MessageOutLoading);
 
     if (!response || !response.body)
@@ -55,9 +135,11 @@ async function load(self: any, message: MessageInLoad): Promise<void> {
         saxParser.end();
         break;
       }
-
-      saxParser.write(chunk.value);
-
+      let offset = 0;
+      while (offset < chunk.value.length) {
+        saxParser.write(chunk.value.slice(offset, offset + 1024));
+        offset += 1024;
+      }
       bytesRead += chunk.value ? chunk.value.length : 0;
       // console.log("Bytes", bytesRead);
 
@@ -71,7 +153,7 @@ async function load(self: any, message: MessageInLoad): Promise<void> {
         url: message.url,
         contentLengthBytes,
         loadedLengthBytes: bytesRead,
-        loadedLengthString: data.length
+        itemLength: items.length
       } as MessageOutLoading);
     }
     self.postMessage({
@@ -79,10 +161,10 @@ async function load(self: any, message: MessageInLoad): Promise<void> {
       url: message.url,
       contentLengthBytes,
       loadedLengthBytes: bytesRead,
-      loadedLengthString: data.length
+      itemLength: items.length
     } as MessageOutLoaded);
   } catch (e) {
-    console.log("fetch load error", e);
+    console.log("fetch load error", e, e.stack);
   }
 }
 
@@ -133,9 +215,19 @@ export type MessageInLoad = {
   url: string;
 };
 
+export type MessageInGetItem = {
+  type: "get-item/request";
+  startIndex: number;
+  endIndex: number;
+};
+
 export type MessageInCancel = { type: "cancel" };
 
-export type MessageIn = MessageInInitSax | MessageInLoad | MessageInCancel;
+export type MessageIn =
+  | MessageInInitSax
+  | MessageInLoad
+  | MessageInCancel
+  | MessageInGetItem;
 
 // Message Out (from web worker)
 
@@ -153,7 +245,8 @@ export type MessageOutLoading = {
   url: string;
   contentLengthBytes: number;
   loadedLengthBytes: number;
-  loadedLengthString: number;
+  loadedLengthString?: number;
+  itemLength: number;
 };
 
 export type MessageOutLoaded = {
@@ -161,10 +254,45 @@ export type MessageOutLoaded = {
   url: string;
   contentLengthBytes: number;
   loadedLengthBytes: number;
-  loadedLengthString: number;
+  loadedLengthString?: number;
+  itemLength: number;
+};
+
+export type MessageOutGetItemResponse = {
+  type: "get-item/response";
+  path: NodeElementType[];
+  startIndex: number;
+  endIndex: number;
+  data: NodeTypes[];
 };
 
 export type MessageOut =
   | MessageOutSaxReady
   | MessageOutLoading
-  | MessageOutLoaded;
+  | MessageOutLoaded
+  | MessageOutGetItemResponse;
+
+// Node Types
+
+type NodeAttributesType = {
+  [name: string]: string;
+};
+
+type NodeElementType = [
+  1, // noteType
+  string, // nodeName
+  (NodeAttributesType | null)?,
+  string? // namespace
+];
+const ELEMENT_ATTRIBUTE_OFFSET = 2;
+
+type NodeCloseElementType = [20]; // non-standard nodeType (obv)
+type NodeTextType = [3, string];
+
+type NodeTypes = NodeElementType | NodeTextType | NodeCloseElementType;
+
+export const ItemTypeEnum = {
+  Element: 1,
+  Text: 3,
+  CloseElement: 100
+};

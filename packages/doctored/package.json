@@ -22,7 +22,7 @@
     "react-dom": "^16.10.2"
   },
   "scripts": {
-    "copy-doctored-worker": "cp ../doctored-worker/build/* ./public/",
+    "copy-doctored-worker": "yarn workspace doctored-worker build && cp ../doctored-worker/build/* ./public/",
     "prestart": "yarn copy-doctored-worker",
     "start": "react-scripts start",
     "prebuild": "yarn copy-doctored-worker",
