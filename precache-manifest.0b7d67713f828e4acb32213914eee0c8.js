@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "f9683e1ac7976958e3d4de75b2c0b375",
+    "revision": "36cf0fd341f81bc9485442346e4d6288",
     "url": "/doctored2/index.html"
   },
   {
@@ -8,8 +8,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/doctored2/static/js/2.72f20a11.chunk.js"
   },
   {
-    "revision": "cc718a93bec18c4d9dec",
-    "url": "/doctored2/static/js/main.afdb5bda.chunk.js"
+    "revision": "ae60ec77ed28a0f159f3",
+    "url": "/doctored2/static/js/main.87518693.chunk.js"
   },
   {
     "revision": "73b475f17782afe67eda",
