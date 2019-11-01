@@ -3,11 +3,11 @@
 // above rule is disabling 'self' var check.
 import { SaxEventType, SAXParser, Detail } from "sax-wasm";
 
-const items: NodeTypes[] = [];
+const nodes: NodeTypes[] = [];
 let lastElement: NodeElementType;
+let parentElements: number[] = [];
+let parentsElements: (number | undefined)[][] = []; // index pointers to parent elements
 let saxParser: SAXParser;
-
-let count = 0;
 
 async function initSax(self: any, message: MessageInInitSax): Promise<void> {
   const wasmUrl = new URL("./sax-wasm.wasm", message.location).toString();
@@ -22,38 +22,24 @@ async function initSax(self: any, message: MessageInInitSax): Promise<void> {
   const ready = await saxParser.prepareWasm(new Uint8Array(saxWasmBuffer));
   if (ready) {
     saxParser.eventHandler = (event: SaxEventType, data: Detail) => {
-      count++;
-
       switch (event) {
         case SaxEventType.OpenTagStart: {
-          if (count < 10) {
-            console.log(
-              "OPEN TAG",
-              JSON.parse(JSON.stringify(event)),
-              JSON.parse(JSON.stringify(data))
-            );
-          }
-
           lastElement = [
             1,
             // @ts-ignore
             data.name
           ];
-          items.push(lastElement);
+          nodes.push(lastElement);
+
           // @ts-ignore
           if (data.selfClosing) {
-            items.push([20] as NodeCloseElementType);
+            nodes.push([NodeTypeEnum.CloseElement] as NodeCloseElementType);
+          } else {
+            parentElements.push(nodes.length - 1);
           }
           break;
         }
         case SaxEventType.Attribute: {
-          if (count < 10) {
-            console.log(
-              "ATTRIBUTE",
-              JSON.parse(JSON.stringify(event)),
-              JSON.parse(JSON.stringify(data))
-            );
-          }
           if (!lastElement) {
             console.error(
               "Attribute node received without lastItem. Huh?",
@@ -69,12 +55,13 @@ async function initSax(self: any, message: MessageInInitSax): Promise<void> {
           break;
         }
         case SaxEventType.CloseTag: {
-          items.push([20] as NodeCloseElementType);
+          nodes.push([NodeTypeEnum.CloseElement] as NodeCloseElementType);
+          parentElements.pop();
           break;
         }
         case SaxEventType.Text: {
-          items.push([
-            3,
+          nodes.push([
+            NodeTypeEnum.Text,
             // @ts-ignore
             data.value
           ] as NodeTextType);
@@ -95,9 +82,11 @@ async function initSax(self: any, message: MessageInInitSax): Promise<void> {
         }
       }
 
-      if (count < 30) {
-        console.log("ITEMS", JSON.parse(JSON.stringify(items)));
-      }
+      parentsElements.push(
+        nodes[nodes.length - 1][0] === NodeTypeEnum.Element
+          ? parentElements.slice()
+          : undefined
+      );
     };
     self.postMessage({ type: "sax-ready" } as MessageOutSaxReady);
   } else {
@@ -121,7 +110,7 @@ async function load(self: any, message: MessageInLoad): Promise<void> {
       type: "loading",
       url: message.url,
       contentLengthBytes,
-      itemLength: items.length
+      nodesLength: nodes.length
     } as MessageOutLoading);
 
     if (!response || !response.body)
@@ -153,7 +142,7 @@ async function load(self: any, message: MessageInLoad): Promise<void> {
         url: message.url,
         contentLengthBytes,
         loadedLengthBytes: bytesRead,
-        itemLength: items.length
+        nodesLength: nodes.length
       } as MessageOutLoading);
     }
     self.postMessage({
@@ -161,11 +150,40 @@ async function load(self: any, message: MessageInLoad): Promise<void> {
       url: message.url,
       contentLengthBytes,
       loadedLengthBytes: bytesRead,
-      itemLength: items.length
+      nodesLength: nodes.length
     } as MessageOutLoaded);
   } catch (e) {
     console.log("fetch load error", e, e.stack);
   }
+}
+
+function findParents(index: number): NodeElementType[] {
+  for (let i = index; i--; i >= 0) {
+    const parentsById = parentsElements[i];
+    if (parentsById !== undefined) {
+      return parentsById.map(
+        (index: number): NodeElementType => {
+          const node: NodeTypes = nodes[index];
+
+          if (node[0] !== NodeTypeEnum.Element) {
+            throw Error(`Parent node not element. Fatal error. Bye!`);
+          }
+          return node;
+        }
+      );
+    }
+  }
+  return [];
+}
+
+function getRange(self: any, message: MessageInGetRange) {
+  self.postMessage({
+    type: "get-range/response",
+    parents: findParents(message.startIndex),
+    startIndex: message.startIndex,
+    endIndex: message.endIndex,
+    nodes: nodes.slice(message.startIndex, message.endIndex)
+  } as MessageOutGetRangeResponse);
 }
 
 // @ts-ignore
@@ -180,6 +198,10 @@ self.onmessage = function(e) {
       load(self, message);
       break;
     }
+    case "get-range/request": {
+      getRange(self, message);
+      break;
+    }
     case "cancel": {
       // not supported
       break;
@@ -189,19 +211,6 @@ self.onmessage = function(e) {
     }
   }
 };
-
-function throttle(func: Function, delay: number) {
-  let timeout: ReturnType<typeof setTimeout> | null = null;
-  return function(...args: any[]) {
-    if (!timeout) {
-      timeout = setTimeout(() => {
-        // @ts-ignore
-        func.call(this, ...args);
-        timeout = null;
-      }, delay);
-    }
-  };
-}
 
 // Message In (to web worker)
 
@@ -215,8 +224,8 @@ export type MessageInLoad = {
   url: string;
 };
 
-export type MessageInGetItem = {
-  type: "get-item/request";
+export type MessageInGetRange = {
+  type: "get-range/request";
   startIndex: number;
   endIndex: number;
 };
@@ -227,7 +236,7 @@ export type MessageIn =
   | MessageInInitSax
   | MessageInLoad
   | MessageInCancel
-  | MessageInGetItem;
+  | MessageInGetRange;
 
 // Message Out (from web worker)
 
@@ -246,7 +255,7 @@ export type MessageOutLoading = {
   contentLengthBytes: number;
   loadedLengthBytes: number;
   loadedLengthString?: number;
-  itemLength: number;
+  nodesLength: number;
 };
 
 export type MessageOutLoaded = {
@@ -255,22 +264,22 @@ export type MessageOutLoaded = {
   contentLengthBytes: number;
   loadedLengthBytes: number;
   loadedLengthString?: number;
-  itemLength: number;
+  nodesLength: number;
 };
 
-export type MessageOutGetItemResponse = {
-  type: "get-item/response";
-  path: NodeElementType[];
+export type MessageOutGetRangeResponse = {
+  type: "get-range/response";
+  parents: NodeElementType[];
   startIndex: number;
   endIndex: number;
-  data: NodeTypes[];
+  nodes: NodeTypes[];
 };
 
 export type MessageOut =
   | MessageOutSaxReady
   | MessageOutLoading
   | MessageOutLoaded
-  | MessageOutGetItemResponse;
+  | MessageOutGetRangeResponse;
 
 // Node Types
 
@@ -279,20 +288,22 @@ type NodeAttributesType = {
 };
 
 type NodeElementType = [
-  1, // noteType
+  NodeTypeEnum.Element, // noteType
   string, // nodeName
   (NodeAttributesType | null)?,
   string? // namespace
 ];
 const ELEMENT_ATTRIBUTE_OFFSET = 2;
 
-type NodeCloseElementType = [20]; // non-standard nodeType (obv)
-type NodeTextType = [3, string];
+type NodeCloseElementType = [NodeTypeEnum.CloseElement]; // non-standard nodeType (obv)
+type NodeTextType = [NodeTypeEnum.Text, string];
 
-type NodeTypes = NodeElementType | NodeTextType | NodeCloseElementType;
+export type NodeTypes = NodeElementType | NodeTextType | NodeCloseElementType;
 
-export const ItemTypeEnum = {
-  Element: 1,
-  Text: 3,
-  CloseElement: 100
-};
+enum NodeTypeEnum {
+  Element = 1,
+  Text = 3,
+  CloseElement = 20
+}
+
+type valueof<T> = T[keyof T];

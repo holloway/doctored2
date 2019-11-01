@@ -4,7 +4,9 @@ import {
   MessageOutLoading,
   MessageOutLoaded,
   MessageInInitSax,
-  MessageInLoad
+  MessageInLoad,
+  MessageInGetRange,
+  NodeTypes
 } from "doctored-worker";
 
 type Props = {};
@@ -12,6 +14,7 @@ type Props = {};
 type State = {
   loading?: MessageOutLoading | undefined;
   loaded?: MessageOutLoaded | undefined;
+  nodes?: NodeTypes[] | undefined;
 };
 
 class App extends Component<Props, State> {
@@ -49,16 +52,33 @@ class App extends Component<Props, State> {
       this.setState({
         loading: message
       });
+      if (message.nodesLength > 0) {
+        this.sourceWorker.postMessage({
+          type: "get-range/request",
+          startIndex: 0,
+          endIndex: Math.min(100, message.nodesLength)
+        } as MessageInGetRange);
+      }
     }
     if (message.type === "loaded") {
       this.setState({
         loaded: message
       });
+      this.sourceWorker.postMessage({
+        type: "get-range/request",
+        startIndex: 0,
+        endIndex: Math.min(100, message.nodesLength)
+      } as MessageInGetRange);
+    }
+    if (message.type === "get-range/response") {
+      this.setState({
+        nodes: message.nodes
+      });
     }
   }
 
   render() {
-    const { loaded, loading } = this.state;
+    const { loaded, loading, nodes } = this.state;
 
     return (
       <div>
@@ -69,6 +89,12 @@ class App extends Component<Props, State> {
         <p>Open your dev console to see messages between threads.</p>
         <div>{loading && loading.loadedLengthBytes}</div>
         <div>{loaded && "DONE"}</div>
+        <div>
+          {nodes &&
+            nodes.map((node: NodeTypes, index: number) => {
+              return <div key={index}>{JSON.stringify(node)}</div>;
+            })}
+        </div>
       </div>
     );
   }
