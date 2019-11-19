@@ -3,7 +3,7 @@ import {
   MessageOut,
   MessageOutLoading,
   MessageOutLoaded,
-  //  MessageInInitDoc,
+  MessageInInitDoc,
   MessageInLoad,
   MessageInGetRange,
   NodeTypes
@@ -25,22 +25,20 @@ class App extends Component<Props, State> {
   constructor(props: {}) {
     super(props);
 
-    this.state = {
-      nodes
-    };
+    this.state = {};
 
     this.sourceWorkerInit = this.sourceWorkerInit.bind(this);
     this.sourceWorkerInit();
   }
 
   sourceWorkerInit() {
-    // this.onmessage = this.onmessage.bind(this);
-    // this.sourceWorker = new Worker("./doctored.worker.js");
-    // this.sourceWorker.onmessage = this.onmessage;
-    // this.sourceWorker.postMessage({
-    //   type: "init-doc",
-    //   location: window.location.toString()
-    // } as MessageInInitDoc);
+    this.onmessage = this.onmessage.bind(this);
+    this.sourceWorker = new Worker("./doctored.worker.js");
+    this.sourceWorker.onmessage = this.onmessage;
+    this.sourceWorker.postMessage({
+      type: "init-doc",
+      location: window.location.toString()
+    } as MessageInInitDoc);
   }
 
   onmessage(e: { data: MessageOut }) {
@@ -98,13 +96,17 @@ class App extends Component<Props, State> {
 
     return (
       <div>
-        <p>
-          Loading and parsing an 80MB XML file in a background thread using
-          WASM.
-        </p>
-        <p>Open your dev console to see messages between threads.</p>
-        <div>{loading && loading.loadedLengthBytes}</div>
-        <div>{loaded && "DONE"}</div>
+        <header>Doctored 2: XML editor demo</header>
+        <div className="intro">
+          <p>
+            Loading and parsing an 80MB XML file in a background thread using
+            WASM.
+          </p>
+          <p>Open your dev console to see messages between threads.</p>
+
+          <div>{loading && loading.loadedLengthBytes}</div>
+          <div>{loaded && "DONE"}</div>
+        </div>
         <div className="doctored-nodes">{nodes && <Nodes nodes={nodes} />}</div>
       </div>
     );
@@ -113,112 +115,52 @@ class App extends Component<Props, State> {
 
 export default App;
 
-const nodes: NodeTypes[] = [
-  [1, "book", { name: "head.cmb" }],
-  [1, "title"],
-  [3, "The Doctored Editor"],
-  [20],
-  [1, "chapter"],
-  [3, "\n  "],
-  [1, "section"],
-  [3, "\n   "],
-  [1, "NP"],
-  [3, "Vz+gjytHnSqmoW8pTex59B=="],
-  [3, "\n    "],
-  [1, "JJ"],
-  [3, "Vz+gjytHnSqmoW8pTex59B=="],
+// const nodes: NodeTypes[] = [
+//   [1, "book", { name: "head.cmb" }],
+//   [1, "title"],
+//   [3, "The Doctored Editor"],
+//   [20],
+//   [1, "chapter"],
+//   [3, "\n  "],
+//   [1, "section"],
+//   [3, "\n   "],
+//   [1, "para"],
+//   [
+//     3,
+//     "It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey!"
+//   ],
 
-  [3, "\n    "],
-  [1, "NN"],
-  [3, "l333Xdexuj+rLngvm5JwYa=="],
-  [20],
-  [3, "\n    "],
-  [1, "NNS"],
-  [3, "0fKDQZ+3ZRIjAo11SUyMQx=="],
-  [20],
-  [3, "\n   "],
-  [20],
-  [
-    3,
-    "Vz+gjytHnSqmoW8pTex59B lots of text Vz+gjytHnSqmoW8pTex59B lots of text Vz+gjytHnSqmoW8pTex59B lots of text Vz+gjytHnSqmoW8pTex59B lots of text Vz+gjytHnSqmoW8pTex59B lots of text"
-  ],
-  [3, "\n   "],
-  [1, "VBP"],
-  [3, "ItAvafJCEinspfoHNn8VbR=="],
-  [20],
-  [3, "\n   "],
-  [1, "VP"],
-  [3, "\n    "],
-  [1, "VBN"],
-  [3, "wtLif6joihOeW/VvC+lIW6=="],
-  [20],
-  [3, "\n    "],
-  [1, "NP"],
-  [3, "\n     "],
-  [1, "NN"],
-  [3, "CRtAgTzGVllR050ybz8wLM=="],
-  [20],
-  [3, "\n    "],
-  [20],
-  [3, "\n    "],
-  [1, "S"],
-  [3, "\n     "],
-  [1, "NP"],
-  [3, "\n      "],
-  [1, "_NONE_"],
-  [3, "O9Dgkfn4JDLYMry5bfJG39=="],
-  [20],
-  [3, "\n     "],
-  [20],
-  [3, "\n     "],
-  [1, "TO"],
-  [3, "l7qHDSm13CMOXnY+jkrZ6t=="],
-  [20],
-  [3, "\n     "],
-  [1, "VP"],
-  [3, "\n      "],
-  [1, "VB"],
-  [3, "OrwbtC5iVeBNpJFWBVdiLK=="],
-  [20],
-  [3, "\n      "],
-  [1, "NP"],
-  [3, "\n       "],
-  [1, "NP"],
-  [3, "\n        "],
-  [1, "DT"],
-  [3, "BbGbgbogeaDTvevENHu97s=="],
-  [20],
-  [3, "\n        "],
-  [1, "NN"],
-  [3, "MuSOrOyQfWAD+wLGsXN6UK=="],
-  [20],
-  [3, "\n       "],
-  [20],
-  [3, "\n       "],
-  [1, "VP"],
-  [3, "\n        "],
-  [1, "VBG"],
-  [3, "AHyj7/GtH8ccvGWaEHMrZR=="],
-  [20],
-  [3, "\n        "],
-  [1, "NP"],
-  [3, "\n         "],
-  [1, "JJ"],
-  [3, "a2vdSiq0HiVRh8Ck8ov5uC=="],
-  [20],
-  [3, "\n         "],
-  [1, "NN"],
-  [3, "/0ZfBqSHfvMbm99/FiGzG6=="],
-  [20],
-  [3, "\n         "],
-  [1, "PP"],
-  [3, "\n          "],
-  [1, "TO"],
-  [3, "6fc25UxSwWg9Pz+yyR6wi8=="],
-  [20],
-  [3, "\n          "],
-  [1, "NP"],
-  [3, "\n           "],
-  [1, "NP"],
-  [3, "\n            "]
-];
+//   [1, "link"],
+//   [3, "It was the blurst of times."],
+//   [1, "span"],
+//   [3, "Stupid monkey!"],
+//   [20],
+//   [1, "span"],
+//   [3, "Stupid monkey!"],
+//   [20],
+//   [20],
+//   [
+//     3,
+//     "It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey!"
+//   ],
+//   [20],
+//   [1, "para"],
+//   [3, "It was the best of times."],
+
+//   [1, "span"],
+//   [3, "It was the blurst of times."],
+//   [1, "span"],
+//   [3, "Stupid monkey!"],
+//   [20],
+//   [1, "span"],
+//   [3, "Stupid monkey!"],
+//   [20],
+//   [20],
+//   [
+//     3,
+//     "It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey!"
+//   ],
+//   [20],
+
+//   [3, "\n            "]
+// ];

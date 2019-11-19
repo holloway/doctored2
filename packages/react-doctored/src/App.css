@@ -1,9 +1,23 @@
 body {
+  padding: 0px;
+  margin: 0px;
+  font-family: "Raleway", Ubuntu, sans-serif;
   background: #eee;
+}
+
+header {
+  background: #ffcc00;
+  padding: 1em;
+  font-size: xx-large;
+}
+
+.intro {
+  margin: 0.5em 2em 2em 2em;
 }
 
 .doctored-nodes {
   background: #eee;
+  padding: 2px;
   font-family: "Raleway", Ubuntu, sans-serif;
 }
 
@@ -14,7 +28,7 @@ body {
 .d-block {
   display: flex;
   clear: both;
-  padding: 0px 0.2em 0px 1em;
+  padding: 0px 0.2em 4px 1em;
   align-items: flex-start;
   border-radius: 2px;
   border-bottom: solid 1px #ccc;
@@ -34,13 +48,14 @@ body {
 
 .d-block .d-block,
 .d-block .d-inline {
-  background: rgba(30, 30, 30, 0.05);
+  background: rgba(30, 30, 30, 0.1);
 }
 
 .d-block__inner {
   vertical-align: top;
   display: inline-block;
-  padding: 1em 0px 0px 0px;
+  padding: 0.5em 0px 0px 0px;
+  margin: 0px;
   height: 100%;
   flex: auto;
 }

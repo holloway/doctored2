@@ -28,7 +28,7 @@ export default function Nodes({ nodes }: Props): React.ReactElement {
       case NodeTypeEnum.Element: {
         if (
           parents[parents.length - 1] === ParentType.inline ||
-          ["NNS", "JJ", "NN"].includes(node[1])
+          ["a", "span", "link"].includes(node[1])
         ) {
           parents.push(ParentType.inline);
           html += `<div class="d-inline"><div class="d-inline__inner"><div class="d-inline__button" role="button" tabindex="0">${node[1]}</div><div class="d-inline__inner__content">`;
