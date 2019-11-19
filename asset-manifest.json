@@ -1,18 +1,21 @@
 {
   "files": {
-    "main.js": "/doctored2/static/js/main.87518693.chunk.js",
-    "main.js.map": "/doctored2/static/js/main.87518693.chunk.js.map",
-    "runtime-main.js": "/doctored2/static/js/runtime-main.bc15aecc.js",
-    "runtime-main.js.map": "/doctored2/static/js/runtime-main.bc15aecc.js.map",
-    "static/js/2.72f20a11.chunk.js": "/doctored2/static/js/2.72f20a11.chunk.js",
-    "static/js/2.72f20a11.chunk.js.map": "/doctored2/static/js/2.72f20a11.chunk.js.map",
+    "main.css": "/doctored2/static/css/main.86566ea3.chunk.css",
+    "main.js": "/doctored2/static/js/main.05628483.chunk.js",
+    "main.js.map": "/doctored2/static/js/main.05628483.chunk.js.map",
+    "runtime-main.js": "/doctored2/static/js/runtime-main.8cc147c5.js",
+    "runtime-main.js.map": "/doctored2/static/js/runtime-main.8cc147c5.js.map",
+    "static/js/2.82778403.chunk.js": "/doctored2/static/js/2.82778403.chunk.js",
+    "static/js/2.82778403.chunk.js.map": "/doctored2/static/js/2.82778403.chunk.js.map",
     "index.html": "/doctored2/index.html",
-    "precache-manifest.0b7d67713f828e4acb32213914eee0c8.js": "/doctored2/precache-manifest.0b7d67713f828e4acb32213914eee0c8.js",
-    "service-worker.js": "/doctored2/service-worker.js"
+    "precache-manifest.7371b9bef792ee491591e076597c23fc.js": "/doctored2/precache-manifest.7371b9bef792ee491591e076597c23fc.js",
+    "service-worker.js": "/doctored2/service-worker.js",
+    "static/css/main.86566ea3.chunk.css.map": "/doctored2/static/css/main.86566ea3.chunk.css.map"
   },
   "entrypoints": [
-    "static/js/runtime-main.bc15aecc.js",
-    "static/js/2.72f20a11.chunk.js",
-    "static/js/main.87518693.chunk.js"
+    "static/js/runtime-main.8cc147c5.js",
+    "static/js/2.82778403.chunk.js",
+    "static/css/main.86566ea3.chunk.css",
+    "static/js/main.05628483.chunk.js"
   ]
 }
