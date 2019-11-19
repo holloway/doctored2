@@ -4,12 +4,12 @@
 import { SaxEventType, SAXParser, Detail } from "sax-wasm";
 
 const nodes: NodeTypes[] = [];
-let lastElement: NodeElementType;
+let lastElement: NodeElementType | undefined;
 let parentElements: number[] = [];
-let parentsElements: (number | undefined)[][] = []; // index pointers to parent elements
+let parentsElements: number[][] = []; // index pointers to parent elements
 let saxParser: SAXParser;
 
-async function initSax(self: any, message: MessageInInitSax): Promise<void> {
+async function initSax(self: any, message: MessageInInitDoc): Promise<void> {
   const wasmUrl = new URL("./sax-wasm.wasm", message.location).toString();
   saxParser = new SAXParser(
     SaxEventType.OpenTagStart |
@@ -82,18 +82,16 @@ async function initSax(self: any, message: MessageInInitSax): Promise<void> {
         }
       }
 
-      parentsElements.push(
-        nodes[nodes.length - 1][0] === NodeTypeEnum.Element
-          ? parentElements.slice()
-          : undefined
-      );
+      if (nodes[nodes.length - 1][0] === NodeTypeEnum.Element) {
+        parentsElements.push(parentElements.slice());
+      }
     };
-    self.postMessage({ type: "sax-ready" } as MessageOutSaxReady);
+    self.postMessage({ type: "doc-ready" } as MessageOutDocReady);
   } else {
     self.postMessage({
-      type: "sax-failure",
+      type: "doc-failure",
       reason: "Unable to parser.prepareWasm"
-    } as MessageOutSaxFailure);
+    } as MessageOutDocFailure);
   }
 }
 
@@ -190,7 +188,7 @@ function getRange(self: any, message: MessageInGetRange) {
 self.onmessage = function(e) {
   const message: MessageIn = e.data;
   switch (message.type) {
-    case "init-sax": {
+    case "init-doc": {
       initSax(self, message);
       break;
     }
@@ -214,8 +212,8 @@ self.onmessage = function(e) {
 
 // Message In (to web worker)
 
-export type MessageInInitSax = {
-  type: "init-sax";
+export type MessageInInitDoc = {
+  type: "init-doc";
   location: string;
 };
 
@@ -233,19 +231,19 @@ export type MessageInGetRange = {
 export type MessageInCancel = { type: "cancel" };
 
 export type MessageIn =
-  | MessageInInitSax
+  | MessageInInitDoc
   | MessageInLoad
   | MessageInCancel
   | MessageInGetRange;
 
 // Message Out (from web worker)
 
-export type MessageOutSaxReady = {
-  type: "sax-ready";
+export type MessageOutDocReady = {
+  type: "doc-ready";
 };
 
-export type MessageOutSaxFailure = {
-  type: "sax-failure";
+export type MessageOutDocFailure = {
+  type: "doc-failure";
   reason?: string | undefined;
 };
 
@@ -276,7 +274,7 @@ export type MessageOutGetRangeResponse = {
 };
 
 export type MessageOut =
-  | MessageOutSaxReady
+  | MessageOutDocReady
   | MessageOutLoading
   | MessageOutLoaded
   | MessageOutGetRangeResponse;
@@ -287,7 +285,7 @@ type NodeAttributesType = {
   [name: string]: string;
 };
 
-type NodeElementType = [
+export type NodeElementType = [
   NodeTypeEnum.Element, // noteType
   string, // nodeName
   (NodeAttributesType | null)?,
@@ -295,15 +293,19 @@ type NodeElementType = [
 ];
 const ELEMENT_ATTRIBUTE_OFFSET = 2;
 
-type NodeCloseElementType = [NodeTypeEnum.CloseElement]; // non-standard nodeType (obv)
-type NodeTextType = [NodeTypeEnum.Text, string];
+export type NodeCloseElementType = [NodeTypeEnum.CloseElement]; // non-standard nodeType (obv)
+export type NodeTextType = [NodeTypeEnum.Text, string];
 
 export type NodeTypes = NodeElementType | NodeTextType | NodeCloseElementType;
+
+export const NodeTypeId = {
+  Element: 1,
+  Text: 3,
+  CloseElement: 20
+};
 
 enum NodeTypeEnum {
   Element = 1,
   Text = 3,
   CloseElement = 20
 }
-
-type valueof<T> = T[keyof T];

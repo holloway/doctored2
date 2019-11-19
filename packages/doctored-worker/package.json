@@ -5,13 +5,14 @@
   "author": "Matthew Holloway",
   "license": "MIT",
   "scripts": {
-    "build-typescript": "tsc --out build/doctored.worker.js src/index.tsx --module system",
+    "build-typescript": "tsc src/index.tsx",
     "build": "webpack --config webpack.config.js",
     "postbuild": "cp ../../node_modules/sax-wasm/lib/sax-wasm.wasm ./build/"
   },
   "devDependencies": {
     "@babel/parser": "^7.6.4",
     "@babel/types": "^7.6.3",
+    "csstype": "^2.6.7",
     "sax-wasm": "^1.4.0",
     "ts-loader": "^6.2.0",
     "typescript": "^3.6.4",

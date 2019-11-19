@@ -1,0 +1,100 @@
+body {
+  background: #eee;
+}
+
+.doctored-nodes {
+  background: #eee;
+  font-family: "Raleway", Ubuntu, sans-serif;
+}
+
+.d-block span[contenteditable]:focus {
+  outline: 0;
+}
+
+.d-block {
+  display: flex;
+  clear: both;
+  padding: 0px 0.2em 0px 1em;
+  align-items: flex-start;
+  border-radius: 2px;
+  border-bottom: solid 1px #ccc;
+  background: #fff;
+  margin-top: 0.2em;
+  flex: auto;
+}
+
+.d-block:first-child {
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+
+.d-block:last-child {
+  border-bottom: 0px;
+}
+
+.d-block .d-block,
+.d-block .d-inline {
+  background: rgba(30, 30, 30, 0.05);
+}
+
+.d-block__inner {
+  vertical-align: top;
+  display: inline-block;
+  padding: 1em 0px 0px 0px;
+  height: 100%;
+  flex: auto;
+}
+
+.d-block__button {
+  display: inline-block;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  padding: 0.2em;
+  cursor: pointer;
+  position: relative;
+  left: -0.8em;
+  top: 0.8em;
+  margin-bottom: 1.5em;
+  font-size: x-small;
+  font-family: "Raleway", Ubuntu, sans-serif;
+  font-weight: bold;
+  color: #666666;
+}
+
+.d-inline {
+  display: inline-block;
+  padding: 0px 0.2em 0.2em 0.2em;
+  vertical-align: top;
+  margin-right: 0.3em;
+}
+
+.d-inline__inner {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.d-inline__inner__content {
+  display: flex;
+  align-content: flex-start;
+  vertical-align: baseline;
+}
+
+.d-inline__button {
+  display: inline-block;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  text-align: center;
+  padding: 0.2em;
+  cursor: pointer;
+  color: white;
+  margin-top: 0.5em;
+  font-size: x-small;
+  font-family: "Raleway", Ubuntu, sans-serif;
+  font-weight: bold;
+  color: #666666;
+}
+
+.d-inline__button:focus {
+  outline: solid 2px purple;
+  outline-offset: 2px;
+}
