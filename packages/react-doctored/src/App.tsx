@@ -95,72 +95,11 @@ class App extends Component<Props, State> {
     const { loaded, loading, nodes } = this.state;
 
     return (
-      <div>
-        <header>Doctored 2: XML editor demo</header>
-        <div className="intro">
-          <p>
-            Loading and parsing an 80MB XML file in a background thread using
-            WASM.
-          </p>
-          <p>Open your dev console to see messages between threads.</p>
-
-          <div>{loading && loading.loadedLengthBytes}</div>
-          <div>{loaded && "DONE"}</div>
-        </div>
-        <div className="doctored-nodes">{nodes && <Nodes nodes={nodes} />}</div>
+      <div className={`d-nodes${!nodes ? " d-loading" : ""}`}>
+        {nodes && <Nodes nodes={nodes} />}
       </div>
     );
   }
 }
 
 export default App;
-
-// const nodes: NodeTypes[] = [
-//   [1, "book", { name: "head.cmb" }],
-//   [1, "title"],
-//   [3, "The Doctored Editor"],
-//   [20],
-//   [1, "chapter"],
-//   [3, "\n  "],
-//   [1, "section"],
-//   [3, "\n   "],
-//   [1, "para"],
-//   [
-//     3,
-//     "It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey!"
-//   ],
-
-//   [1, "link"],
-//   [3, "It was the blurst of times."],
-//   [1, "span"],
-//   [3, "Stupid monkey!"],
-//   [20],
-//   [1, "span"],
-//   [3, "Stupid monkey!"],
-//   [20],
-//   [20],
-//   [
-//     3,
-//     "It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey!"
-//   ],
-//   [20],
-//   [1, "para"],
-//   [3, "It was the best of times."],
-
-//   [1, "span"],
-//   [3, "It was the blurst of times."],
-//   [1, "span"],
-//   [3, "Stupid monkey!"],
-//   [20],
-//   [1, "span"],
-//   [3, "Stupid monkey!"],
-//   [20],
-//   [20],
-//   [
-//     3,
-//     "It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey! It was the best of times. It was the blurst of times. Stupid monkey! Stupid monkey!"
-//   ],
-//   [20],
-
-//   [3, "\n            "]
-// ];

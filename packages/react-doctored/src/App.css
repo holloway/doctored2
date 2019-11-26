@@ -1,24 +1,39 @@
-body {
-  padding: 0px;
-  margin: 0px;
+.d-nodes {
   font-family: "Raleway", Ubuntu, sans-serif;
-  background: #eee;
+  height: 100%;
+  min-height: 100vh;
 }
 
-header {
-  background: #ffcc00;
-  padding: 1em;
-  font-size: xx-large;
+.d-nodes::after {
+  content: "";
+  display: block;
+  pointer-events: none;
+  transition: opacity 1s;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: #333;
+  opacity: 0;
 }
 
-.intro {
-  margin: 0.5em 2em 2em 2em;
+.d-loading::after {
+  animation: d-loading-opacity 2s;
+  animation-iteration-count: infinite;
+  opacity: 1;
 }
 
-.doctored-nodes {
-  background: #eee;
-  padding: 2px;
-  font-family: "Raleway", Ubuntu, sans-serif;
+@keyframes d-loading-opacity {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0.6;
+  }
 }
 
 .d-block span[contenteditable]:focus {
@@ -27,6 +42,7 @@ header {
 
 .d-block {
   display: flex;
+  flex: auto;
   clear: both;
   padding: 0px 0.2em 4px 1em;
   align-items: flex-start;
@@ -34,7 +50,6 @@ header {
   border-bottom: solid 1px #ccc;
   background: #fff;
   margin-top: 0.2em;
-  flex: auto;
 }
 
 .d-block:first-child {

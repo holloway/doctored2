@@ -22,19 +22,34 @@ export default function Nodes({ nodes }: Props): React.ReactElement {
 
   const parents: ParentType[] = [];
 
+  function isInline(nodeName: string) {
+    return (
+      parents[parents.length - 1] === ParentType.inline ||
+      ["a", "span", "link"].includes(nodeName)
+    );
+  }
+
+  console.log(nodes);
+
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
     switch (node[0]) {
       case NodeTypeEnum.Element: {
-        if (
-          parents[parents.length - 1] === ParentType.inline ||
-          ["a", "span", "link"].includes(node[1])
-        ) {
+        if (isInline(node[1])) {
           parents.push(ParentType.inline);
-          html += `<div class="d-inline"><div class="d-inline__inner"><div class="d-inline__button" role="button" tabindex="0">${node[1]}</div><div class="d-inline__inner__content">`;
+          html += `<div class="d-inline">`;
+          html += `<div class="d-inline__inner">`;
+          html += `<div class="d-inline__button" role="button" tabindex="0">`;
+          html += node[1];
+          html += `</div>`;
+          html += `<div class="d-inline__inner__content">`;
         } else {
           parents.push(ParentType.block);
-          html += `<div class="d-block"><div class="d-block__button" role="button" tabindex="0">${node[1]}</div><div class="d-block__inner">`;
+          html += `<div class="d-block">`;
+          html += `<div class="d-block__button" role="button" tabindex="0">`;
+          html += node[1];
+          html += `</div>`;
+          html += `<div class="d-block__inner">`;
         }
         break;
       }
@@ -45,9 +60,12 @@ export default function Nodes({ nodes }: Props): React.ReactElement {
       case NodeTypeEnum.CloseElement: {
         const closing = parents.pop();
         if (closing === ParentType.inline) {
-          html += "</div></div></div>";
+          html += `</div>`;
+          html += `</div>`;
+          html += `</div>`;
         } else {
-          html += "</div></div>";
+          html += `</div>`;
+          html += `</div>`;
         }
       }
     }
