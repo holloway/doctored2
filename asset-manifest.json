@@ -1,21 +1,21 @@
 {
   "files": {
-    "main.css": "/doctored2/static/css/main.86566ea3.chunk.css",
-    "main.js": "/doctored2/static/js/main.05628483.chunk.js",
-    "main.js.map": "/doctored2/static/js/main.05628483.chunk.js.map",
+    "main.css": "/doctored2/static/css/main.f52fd34b.chunk.css",
+    "main.js": "/doctored2/static/js/main.c7372be1.chunk.js",
+    "main.js.map": "/doctored2/static/js/main.c7372be1.chunk.js.map",
     "runtime-main.js": "/doctored2/static/js/runtime-main.8cc147c5.js",
     "runtime-main.js.map": "/doctored2/static/js/runtime-main.8cc147c5.js.map",
     "static/js/2.82778403.chunk.js": "/doctored2/static/js/2.82778403.chunk.js",
     "static/js/2.82778403.chunk.js.map": "/doctored2/static/js/2.82778403.chunk.js.map",
     "index.html": "/doctored2/index.html",
-    "precache-manifest.7371b9bef792ee491591e076597c23fc.js": "/doctored2/precache-manifest.7371b9bef792ee491591e076597c23fc.js",
+    "precache-manifest.445116de35dbe0469e67e0baf5c622f4.js": "/doctored2/precache-manifest.445116de35dbe0469e67e0baf5c622f4.js",
     "service-worker.js": "/doctored2/service-worker.js",
-    "static/css/main.86566ea3.chunk.css.map": "/doctored2/static/css/main.86566ea3.chunk.css.map"
+    "static/css/main.f52fd34b.chunk.css.map": "/doctored2/static/css/main.f52fd34b.chunk.css.map"
   },
   "entrypoints": [
     "static/js/runtime-main.8cc147c5.js",
     "static/js/2.82778403.chunk.js",
-    "static/css/main.86566ea3.chunk.css",
-    "static/js/main.05628483.chunk.js"
+    "static/css/main.f52fd34b.chunk.css",
+    "static/js/main.c7372be1.chunk.js"
   ]
 }
