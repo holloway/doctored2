@@ -11458,10 +11458,10 @@ sass-loader@7.2.0:
     pify "^4.0.1"
     semver "^5.5.0"
 
-sax-wasm@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/sax-wasm/-/sax-wasm-1.4.0.tgz#92c073a5f05ebcaaa3fa11fdffa96cda3806ee0b"
-  integrity sha512-1JX0fbiGNVM+8fpatDzTVyN8F753nTQ7CKg9WHy29sXOsxdNIy5e10wMHjiYKUlDg+StL5vKpWBpMLHS3zuK0g==
+sax-wasm@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/sax-wasm/-/sax-wasm-1.4.1.tgz#55730bc2c113b3f1e723e93c3c51fab76b0d7806"
+  integrity sha512-1JvtgcC6vPCXX7ywxozcO+fJ32FNU/cjaubmeSjlywpSV+Xr5YjpJCStCWMM+bxKJdc86EiSzLzZ1QOw+T64Ug==
 
 sax@^1.2.4, sax@~1.2.4:
   version "1.2.4"

@@ -124,7 +124,8 @@ async function load(self: any, message: MessageInLoad): Promise<void> {
       }
       let offset = 0;
       while (offset < chunk.value.length) {
-        saxParser.write(chunk.value.slice(offset, offset + 1024));
+        const bit = chunk.value.slice(offset, offset + 1024);
+        saxParser.write(bit);
         offset += 1024;
       }
       bytesRead += chunk.value ? chunk.value.length : 0;
